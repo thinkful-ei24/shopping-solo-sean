@@ -2,19 +2,20 @@
 
 const STORE = {
     items: [
-        {id: cuid(), name: "apples", checked: false},
-        {id: cuid(), name: "oranges", checked: false},
-        {id: cuid(), name: "milk", checked: false},
-        {id: cuid(), name: "bread", checked: false}
+        {id: 5, name: "apples", checked: false},
+        {id: 7, name: "oranges", checked: false},
+        {id: 9, name: "milk", checked: false},
+        {id: 10, name: "bread", checked: false}
     ],
 
-    showChecked: false,
-    // holds a sorted view of items
-    itemView: items
+    showChecked: false
 };
 
+// holds a sorted view of items
+STORE.itemView = STORE.items
+
 // i want the edit button and time in a span to the right of the name
-function generateHtml(item, index) {
+function generateListElementBlock(item, index) {
     let checkedStyle = item.checked ? 'shopping-item__checked' : '';
     return `<li class="js-item-index-element"
         data-item-index="${index}">
@@ -31,18 +32,20 @@ function generateHtml(item, index) {
 }
 
 function renderHtml() {
-    let items
+    let allItems = STORE.itemView;
+    let renderedItems;
     if(STORE.showChecked) {
-        items = STORE.items;
+        renderedItems = allItems;
     } else {
-        items = STORE.items.filter(item => item.checked === false);
+        renderedItems = allItems.filter(item => item.checked === false);
     }
 
-    const storeHtml = items.map((item, index) => generateHtml(item, index))
+    const storeHtml = renderedItems.map((item, index) =>
+        generateListElementBlock(item, index))
         .join('');
     $('.js-shopping-list').html(storeHtml);
 
-    console.log(STORE.items);
+    console.log("items that should be rendered: " + renderedItems.map(item => item.name).join(', '));
 }
 
 const handlers = {
@@ -59,7 +62,7 @@ const handlers = {
     },
 
     handleToggle: function(event) {
-        const index = $(this).parents('.js-item-index-element').attr('data-item-index');
+        const index = $(this).id;
         STORE.items[index].checked = !STORE.items[index].checked;
         console.log("hide " + STORE.items[index].name + " at index " + index);
         renderHtml();
@@ -82,6 +85,10 @@ const handlers = {
         renderHtml();
     }
 
+}
+
+function findElement(id) {
+   return STORE.items.find(item => item.id === id);
 }
 
 function bindEventHandlers() {
