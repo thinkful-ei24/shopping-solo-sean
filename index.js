@@ -2,10 +2,10 @@
 
 const STORE = {
     items: [
-        {id: 5, name: "apples", checked: false},
-        {id: 7, name: "oranges", checked: false},
-        {id: 9, name: "milk", checked: false},
-        {id: 10, name: "bread", checked: false}
+        {name: "apples", checked: false},
+        {name: "oranges", checked: false},
+        {name: "milk", checked: false},
+        {name: "bread", checked: false}
     ],
 
     showChecked: false
@@ -32,20 +32,17 @@ function generateListElementBlock(item, index) {
 }
 
 function renderHtml() {
-    let allItems = STORE.itemView;
-    let renderedItems;
-    if(STORE.showChecked) {
-        renderedItems = allItems;
-    } else {
-        renderedItems = allItems.filter(item => item.checked === false);
+    let renderView = [...STORE.itemView];
+    if(!STORE.showChecked) {
+        renderView = renderView.filter(item => item.checked === false);
     }
 
-    const storeHtml = renderedItems.map((item, index) =>
+    const storeHtml = renderView.map((item, index) =>
         generateListElementBlock(item, index))
         .join('');
     $('.js-shopping-list').html(storeHtml);
 
-    console.log("items that should be rendered: " + renderedItems.map(item => item.name).join(', '));
+    console.log("items that should be rendered: " + renderView.map(item => item.name).join(', '));
 }
 
 const handlers = {
@@ -62,14 +59,18 @@ const handlers = {
     },
 
     handleToggle: function(event) {
-        const index = $(this).id;
+        let index = $(this).closest('.js-item-index-element').attr('data-item-index');
+        // TODO: this doesn't work. WHY???
+        // let index = findIndex(this);
+        let item = STORE.items[index];
         STORE.items[index].checked = !STORE.items[index].checked;
-        console.log("hide " + STORE.items[index].name + " at index " + index);
+        // console.log("hide " + STORE.items[index].name + " at index " + index);
         renderHtml();
     },
 
     handleDelete: function (event) {
-        const index = $(this).parents('.js-item-index-element').attr('data-item-index');
+        let index = findIndex(this);
+        index = findIndex(this);
         STORE.items.splice(index, 1);
         renderHtml();
     },
@@ -78,7 +79,7 @@ const handlers = {
         console.log("edit button clicked");
     },
 
-    handleItemHiding: function(event) {
+    handleItemVisibility: function(event) {
         let isChecked = $(this).is(":checked");
         STORE.showChecked = isChecked;
         console.log('show all items: ' + isChecked);
@@ -87,13 +88,13 @@ const handlers = {
 
 }
 
-function findElement(id) {
-   return STORE.items.find(item => item.id === id);
+function findIndex(item) {
+   $(this).closest('.js-item-index-element').attr('data-item-index');
 }
 
 function bindEventHandlers() {
     $('#js-shopping-list-form').submit(handlers.handleItemAdded);
-    $('#checkbox-show-checked').change(handlers.handleItemHiding);
+    $('#checkbox-show-checked').change(handlers.handleItemVisibility);
     $('.js-shopping-list').on('click', '.shopping-item-toggle', handlers.handleToggle);
     $('.js-shopping-list').on('click', '.shopping-item-delete', handlers.handleDelete);
     $('.js-shopping-list').on('click', 'shopping-item-edit', handlers.handleEdit);
