@@ -50,3 +50,15 @@ button:hover {
 .shopping-item__checked {
     text-decoration: line-through;
 }
+
+.edit-button {
+    background: pink;
+    /* width: 20px;
+    height: 20px; */
+    display: inline-block;
+}
+
+.timestamp {
+    background: blue;
+    float: right;
+}
