@@ -45,6 +45,10 @@ function renderHtml() {
         renderView = renderView.filter(item => item.checked === false);
     }
 
+    if(STORE.searchFilter) {
+        renderView = renderView.filter(item => item.name.includes(STORE.searchFilter));
+    }
+
     const storeHtml = renderView.map((item, index) =>
         generateListElementBlock(item, index))
         .join('');
@@ -105,7 +109,7 @@ const handlers = {
     },
 
     handleSearch: function(event) {
-        STORE.searchFilter = this.val();
+        STORE.searchFilter = $(this).val();
         renderHtml();
     }
 
@@ -118,7 +122,7 @@ function findIndex(item) {
 function bindEventHandlers() {
     $('#js-shopping-list-form').submit(handlers.handleItemAdded);
     $('#checkbox-show-checked').change(handlers.handleItemVisibility);
-    // $('#text-search').change(handleS);
+    $('#text-search').on('input', handlers.handleSearch);
     $('.js-shopping-list').on('click', '.shopping-item-edit', handlers.handleEditEntry);
     // $('.js-shopping-list').on('focusout', '.shopping-item-edit', handlers.handleEditExit);
     $('.js-shopping-list').on('click', '.shopping-item-toggle', handlers.handleToggle);
